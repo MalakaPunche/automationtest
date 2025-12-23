@@ -1,0 +1,11 @@
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# PDF Files (Assessment documents)
+SoftwareEngineerAutomation_TakeHomeAssessment_2.0_Set1.pdf

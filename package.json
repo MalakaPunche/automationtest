@@ -1,0 +1,14 @@
+{
+  "name": "softwareengineerautomation_takehomeassessment_2.0_set1",
+  "version": "1.0.0",
+  "description": "## Setup (Describe setup required to run the tests.) Example format: 1. git clone <repo> 2. cd <folder> 3. npm install 4. npx playwright install 5. cp .env.example .env 6. # fill in .env values 7. npx playwright test",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.3"
+  }
+}
