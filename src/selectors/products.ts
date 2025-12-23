@@ -1,46 +1,69 @@
-export const loginSelectors = {
+export const productsSelectors = {
   // Navigation
-  loginLink: 'a[href="/login"]',
+  productsLink: 'a[href="/products"]',
   
-  // Login Form (Existing User)
-  loginForm: 'form[action="/login"]',
-  loginEmail: 'input[data-qa="login-email"]',
-  loginPassword: 'input[data-qa="login-password"]',
-  loginButton: 'button[data-qa="login-button"]',
+  // Product List
+  productsList: '.features_items',
+  productItem: '.product-image-wrapper',
   
-  // Signup Form (New User)
-  signupForm: 'form[action="/signup"]',
-  signupName: 'input[data-qa="signup-name"]',
-  signupEmail: 'input[data-qa="signup-email"]',
-  signupButton: 'button[data-qa="signup-button"]',
+  // First Product
+  firstProduct: '.features_items .product-image-wrapper:first-child',
+  firstProductName: '.features_items .product-image-wrapper:first-child .productinfo h2',
+  firstProductPrice: '.features_items .product-image-wrapper:first-child .productinfo h2',
+  firstProductAddToCart: '.features_items .product-image-wrapper:first-child .add-to-cart',
   
-  // Registration Form (After Signup)
-  accountInfoForm: '#form',
-  titleMr: '#id_gender1',
-  titleMrs: '#id_gender2',
-  password: '#password',
-  dateOfBirthDay: '#days',
-  dateOfBirthMonth: '#months',
-  dateOfBirthYear: '#years',
+  // General Product Selectors
+  productName: '.productinfo p',
+  productPrice: '.productinfo h2',
+  productImage: '.productinfo img',
+  addToCartButton: '.add-to-cart',
+  viewProductButton: 'a[href*="/product_details"]',
   
-  // Additional Info
-  firstName: '#first_name',
-  lastName: '#last_name',
-  company: '#company',
-  address1: '#address1',
-  address2: '#address2',
-  country: '#country',
-  state: '#state',
-  city: '#city',
-  zipcode: '#zipcode',
-  mobileNumber: '#mobile_number',
+  // Category Filter
+  categoryPanel: '.left-sidebar .panel-default',
+  categoryList: '.panel-body ul',
+  womenCategory: 'a[href="#Women"]',
+  menCategory: 'a[href="#Men"]',
+  kidsCategory: 'a[href="#Kids"]',
   
-  createAccountButton: 'button[data-qa="create-account"]',
-  accountCreatedMessage: 'h2[data-qa="account-created"]',
-  continueButton: 'a[data-qa="continue-button"]',
+  // Sub-categories
+  dressCategory: 'a[href="/category_products/1"]',
+  topsCategory: 'a[href="/category_products/2"]',
+  tshirtsCategory: 'a[href="/category_products/3"]',
+  jeansCategory: 'a[href="/category_products/6"]',
   
-  // Logged in state
-  loggedInUser: 'a:has-text("Logged in as")',
-  logoutLink: 'a[href="/logout"]',
-  deleteAccountLink: 'a[href="/delete_account"]'
+  // Brands Filter
+  brandsPanel: '.brands_products',
+  brandLink: '.brands_products ul li a',
+  
+  // Modal after adding to cart
+  addToCartModal: '.modal-content',
+  addToCartConfirmation: '.modal-body p:has-text("Your product has been added to cart.")',
+  continueShoppingButton: 'button[data-dismiss="modal"]',
+  viewCartLink: '.modal-body a[href="/view_cart"]',
+  
+  // Search
+  searchInput: '#search_product',
+  searchButton: '#submit_search',
+  searchedProducts: '.features_items'
+};
+
+export const productDetailSelectors = {
+  // Product Details Page
+  productInfo: '.product-information',
+  productName: '.product-information h2',
+  productCategory: '.product-information p:has-text("Category:")',
+  productPrice: '.product-information span span',
+  productAvailability: '.product-information p:has-text("Availability:")',
+  productCondition: '.product-information p:has-text("Condition:")',
+  productBrand: '.product-information p:has-text("Brand:")',
+  
+  // Add to Cart
+  quantityInput: '#quantity',
+  addToCartButton: 'button.cart',
+  
+  // Modal
+  addToCartConfirmation: '.modal-body p:has-text("Your product has been added to cart.")',
+  viewCartLink: '.modal-body a[href="/view_cart"]',
+  continueShoppingButton: 'button[data-dismiss="modal"]'
 };
