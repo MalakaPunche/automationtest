@@ -1,58 +1,50 @@
 import { Page } from '@playwright/test';
-import { cartSelectors } from '../selectors/cart';
-import { CartItem } from '../models';
+import { cartSelectors } from '../selectors/cart.selectors';
+import { CartItem } from '../models/cart';
 
 export class CartPage {
   constructor(private page: Page) {}
 
-  async navigateToCart() {
+  async navigate() {
     await this.page.goto('/view_cart');
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForSelector(cartSelectors.cartTable);
   }
 
   async getCartItems(): Promise<CartItem[]> {
-    await this.page.waitForSelector(cartSelectors.cartTable, { state: 'visible' });
-    
-    const rows = await this.page.locator(cartSelectors.cartItemRow).all();
+    const rows = this.page.locator(cartSelectors.cartItemRow);
+    const count = await rows.count();
     const items: CartItem[] = [];
 
-    for (const row of rows) {
+    for (let i = 0; i < count; i++) {
+      const row = rows.nth(i);
       const name = await row.locator(cartSelectors.itemName).textContent();
       const price = await row.locator(cartSelectors.itemPrice).textContent();
-      const quantity = await row.locator(cartSelectors.itemQuantity).textContent();
+      const quantityText = await row.locator(cartSelectors.itemQuantity).innerText();
+      const quantity = Number(quantityText.replace(/\D/g, '')) || 1;
       const total = await row.locator(cartSelectors.itemTotal).textContent();
 
       items.push({
-        product: {
-          name: name?.trim() || '',
-          price: price?.trim() || ''
-        },
-        quantity: parseInt(quantity?.trim() || '1'),
-        totalPrice: total?.trim() || ''
+        product: { name: name?.trim() || '', price: price?.trim() || '' },
+        quantity,
+        totalPrice: total?.trim() || '',
       });
     }
 
     return items;
   }
 
-  async removeItem(itemIndex: number = 0) {
-    await this.page.waitForSelector(cartSelectors.cartItemRow, { state: 'visible' });
-    
-    const deleteButtons = await this.page.locator(cartSelectors.deleteButton).all();
-    if (deleteButtons[itemIndex]) {
-      await deleteButtons[itemIndex].click();
-      await this.page.waitForLoadState('networkidle');
-    }
+  async removeItem(index = 0) {
+    const deleteButtons = this.page.locator(cartSelectors.deleteButton);
+    await deleteButtons.nth(index).click();
+    await this.page.waitForTimeout(500); // small wait for DOM update
   }
 
   async proceedToCheckout() {
-    await this.page.waitForSelector(cartSelectors.checkoutButton, { state: 'visible' });
     await this.page.click(cartSelectors.checkoutButton);
     await this.page.waitForLoadState('domcontentloaded');
   }
 
-  async isCartEmpty(): Promise<boolean> {
-    const emptyCartMessage = this.page.locator(cartSelectors.emptyCartMessage);
-    return await emptyCartMessage.isVisible();
+  async isEmpty(): Promise<boolean> {
+    return this.page.locator(cartSelectors.emptyCartMessage).isVisible();
   }
 }

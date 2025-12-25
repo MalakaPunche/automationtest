@@ -1,45 +1,54 @@
 import { Page } from '@playwright/test';
-import { productsSelectors } from '../selectors/products';
-import { Product } from '../models';
+import { productsSelectors } from '../selectors/products.selectors';
+import { Product } from '../models/product';
 
 export class ProductsPage {
   constructor(private page: Page) {}
 
-  async navigateToProducts() {
+  async navigate() {
     await this.page.goto('/products');
     await this.page.waitForLoadState('domcontentloaded');
   }
 
-  async filterByCategory(category: string) {
-    await this.page.waitForSelector(productsSelectors.categoryList, { state: 'visible' });
-    await this.page.click(`${productsSelectors.categoryPrefix}:has-text("${category}")`);
+  async filterByCategory(category: 'Women' | 'Men' | 'Kids', subCategory?: 'Dress' | 'Tops' | 'Tshirts' | 'Jeans') {
+    if (category === 'Women') await this.page.click(productsSelectors.womenCategory);
+    if (category === 'Men') await this.page.click(productsSelectors.menCategory);
+    if (category === 'Kids') await this.page.click(productsSelectors.kidsCategory);
+
+    switch (subCategory) {
+      case 'Dress':
+        await this.page.click(productsSelectors.dressCategory);
+        break;
+      case 'Tops':
+        await this.page.click(productsSelectors.topsCategory);
+        break;
+      case 'Tshirts':
+        await this.page.click(productsSelectors.tshirtsCategory);
+        break;
+      case 'Jeans':
+        await this.page.click(productsSelectors.jeansCategory);
+        break;
+    }
+
     await this.page.waitForLoadState('networkidle');
   }
 
   async getFirstProduct(): Promise<Product> {
-    await this.page.waitForSelector(productsSelectors.firstProduct, { state: 'visible' });
-    
     const name = await this.page.locator(productsSelectors.firstProductName).textContent();
     const price = await this.page.locator(productsSelectors.firstProductPrice).textContent();
-    
     return {
       name: name?.trim() || '',
-      price: price?.trim() || ''
+      price: price?.trim() || '',
     };
   }
 
   async addFirstProductToCart() {
-    await this.page.waitForSelector(productsSelectors.firstProductAddToCart, { state: 'visible' });
     await this.page.click(productsSelectors.firstProductAddToCart);
-    
-    // Wait for confirmation modal/message
-    await this.page.waitForSelector(productsSelectors.addToCartConfirmation, { state: 'visible' });
+    await this.page.waitForSelector(productsSelectors.addToCartConfirmation);
   }
 
-  async viewProductDetails(productIndex: number = 1) {
-    const viewProductSelector = `${productsSelectors.viewProductButton}:nth-of-type(${productIndex})`;
-    await this.page.waitForSelector(viewProductSelector, { state: 'visible' });
-    await this.page.click(viewProductSelector);
+  async viewProductDetails(index = 0) {
+    await this.page.locator(productsSelectors.viewProductButton).nth(index).click();
     await this.page.waitForLoadState('domcontentloaded');
   }
 
