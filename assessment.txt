@@ -1,0 +1,75 @@
+PRIVATE & CONFIDENTIAL
+MODE FAIR SDN BHD
+Take-Home Assessment: Software Engineer, Automation
+You are tasked to design and implement a Playwright + TypeScript test suite for
+Automation Exercise. Target site: https://automationexercise.com/
+Business Scenario
+Pre-test: Navigate to https://automationexercise.com/ and register a new account.
+1. Login with the created account. *Manage your credentials properly.
+2. Go to the product page and filter products by a category.
+3. Verify that the filtered results are displayed correctly. *Verify at least the first
+item displayed.
+4. Add an item to the cart. Go to the Cart and verify the product is present and
+the price is correct.
+5. Go back to the previous page and verify the filtered results still valid.
+6. View another item’s detail page and verify attributes (name, price). Add the
+item to the Cart.
+7. Open the Cart, remove the first added item, and verify it has been removed.
+8. Proceed to Checkout. Fill in the required forms with mock data.
+9. Complete the payment process successfully.
+Technical Requirements
+• This is ONE continuous test flow, covering end-to-end user interactions.
+• Use Playwright Test with TypeScript (strict mode).
+• Implement Page Object Model (POM).
+• Maintain selectors in dedicated files (not inside Page Objects).
+• Define models/interfaces where appropriate (e.g., Product, CartItem).
+• Use fixtures for authenticated sessions where relevant.
+• Ensure robust waits (avoid hard sleeps).
+• Use Prettier for formatting.
+• A readable HTML report is required: clear test names, meaningful assertions,
+traces on retry, screenshots on failure.
+• You may edit the provided playwright.config.ts to meet the requirements.
+• Provide a README.md following the template provided.
+• For any steps that need you to do verification, you may either
+o Extract product details at runtime, or
+o Use test data files to store and retrieve inputs (e.g., product names).
+
+PRIVATE & CONFIDENTIAL
+MODE FAIR SDN BHD
+Suggested Project Structure
+playwright.config.ts
+package.json
+/src
+/selectors
+*.selectors.ts
+/pages
+*.ts (Page Objects)
+/models
+*.ts (interfaces/classes)
+/fixtures
+sessions.ts
+/test-data
+/tests
+*.spec.ts
+README.md
+Timebox & Submission
+• Expected effort: 3–5 hours
+• Submission window: 72 hours after receiving this assessment
+• Before submitting:
+o The submission form has a 30-minute time limit — have your GitHub link
+ready before starting.
+o Ensure your repository is public and accessible.
+o Test your link in an incognito/private browser window before
+submitting.
+o Verify that npm install && npx playwright test runs successfully.
+• How to submit:
+o Complete your Playwright test suite.
+o Push to a public GitHub repository.
+o Include the Playwright HTML report in the repo.
+o Include at least one failure artifact (screenshot or trace) to demonstrate
+reporting.
+o Submit via this Google Form: https://form-timer.com/start/c451e36a.
+• Automatic disqualification:
+o Inaccessible GitHub repository (private, broken link, or 404)
+o Repository missing required files
+o Code does not run
