@@ -1,16 +1,21 @@
 import { Page } from '@playwright/test';
 import { loginSelectors } from '../selectors/login.selectors';
-import { UserCredentials, UserRegistration } from '../models/user';
+import { UserCredentials } from '../models/user';
 
 export class LoginPage {
   constructor(private page: Page) {}
 
+  /**
+   * Navigate to login page
+   */
   async navigate() {
     await this.page.goto('/login');
     await this.page.waitForLoadState('domcontentloaded');
   }
 
-  // Login existing user
+  /**
+   * Login using provided credentials
+   */
   async login(credentials: UserCredentials) {
     await this.page.fill(loginSelectors.loginEmail, credentials.email);
     await this.page.fill(loginSelectors.loginPassword, credentials.password);
@@ -18,17 +23,16 @@ export class LoginPage {
     await this.page.waitForSelector(loginSelectors.loggedInUser);
   }
 
-  // Signup new user
-  async signup(user: UserRegistration) {
-    await this.page.fill(loginSelectors.signupName, user.name);
-    await this.page.fill(loginSelectors.signupEmail, user.email);
-    await this.page.click(loginSelectors.signupButton);
-  }
-
+  /**
+   * Check if user is logged in
+   */
   async isLoggedIn(): Promise<boolean> {
     return this.page.locator(loginSelectors.loggedInUser).isVisible();
   }
 
+  /**
+   * Logout
+   */
   async logout() {
     await this.page.click(loginSelectors.logoutLink);
     await this.page.waitForSelector(loginSelectors.loginLink);

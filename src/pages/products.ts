@@ -34,8 +34,8 @@ export class ProductsPage {
   }
 
   async getFirstProduct(): Promise<Product> {
-    const name = await this.page.locator(productsSelectors.firstProductName).textContent();
-    const price = await this.page.locator(productsSelectors.firstProductPrice).textContent();
+    const name = await this.page.locator(productsSelectors.firstProductName).nth(0).textContent();
+    const price = await this.page.locator(productsSelectors.firstProductPrice).nth(0).textContent();
     return {
       name: name?.trim() || '',
       price: price?.trim() || '',
