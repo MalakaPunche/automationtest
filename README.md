@@ -1,4 +1,4 @@
-# Automation with Playwright & TypeScript — Candidate README
+# Automation with Playwright & TypeScript README
 
 ## Setup
 Follow these steps to set up and run the test suite:
