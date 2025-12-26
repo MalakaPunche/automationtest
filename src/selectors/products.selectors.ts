@@ -12,10 +12,19 @@ export const productsSelectors = {
   firstProductPrice: '.features_items .product-image-wrapper:first-child .productinfo h2',
   firstProductAddToCart: '.features_items .product-image-wrapper:first-child .add-to-cart',
 
-  // General product selectors
+  // // General product selectors
+  // productName: '.productinfo p',
+  // productPrice: '.productinfo h2',
+  // addToCartButton: '.add-to-cart',
+  // viewProductButton: 'a[href^="/product_details"]',
+
+  // -------------------
+  // General product selectors (for Option 2)
+  // -------------------
+  productCard: '.product-image-wrapper', // wrapper for any product card
   productName: '.productinfo p',
   productPrice: '.productinfo h2',
-  addToCartButton: '.add-to-cart',
+  addToCartButton: '.product-overlay .add-to-cart', // scoped inside productCard
   viewProductButton: 'a[href^="/product_details"]',
 
   // Category filter
@@ -30,7 +39,17 @@ export const productsSelectors = {
   tshirtsCategory: 'a[href="/category_products/3"]',
   jeansCategory: 'a[href="/category_products/6"]',
 
+  // // Add-to-cart modal
+  // addToCartModal: '.modal-content',
+  // addToCartConfirmation: '.modal-body p:has-text("Your product has been added to cart.")',
+  // productCard: '.product-image-wrapper', // wrapper for each product
+  // addToCartButton: '.product-overlay .add-to-cart', // inside a product card
+  // continueShoppingButton: 'button[data-dismiss="modal"]',
+  // viewCartLink: '.modal-body a[href="/view_cart"]',
+
+  // -------------------
   // Add-to-cart modal
+  // -------------------
   addToCartModal: '.modal-content',
   addToCartConfirmation: '.modal-body p:has-text("Your product has been added to cart.")',
   continueShoppingButton: 'button[data-dismiss="modal"]',

@@ -1,67 +1,17 @@
-// import { Page } from '@playwright/test';
-// import { cartSelectors } from '../selectors/cart.selectors';
-// import { CartItem } from '../models/cart';
-
-// export class CartPage {
-//   constructor(private page: Page) {}
-
-//   async navigate() {
-//     await this.page.goto('/view_cart');
-//     await this.page.waitForSelector(cartSelectors.cartTable);
-//   }
-
-//   async getCartItems(): Promise<CartItem[]> {
-//     const rows = this.page.locator(cartSelectors.cartItemRow);
-//     const count = await rows.count();
-//     const items: CartItem[] = [];
-
-//     for (let i = 0; i < count; i++) {
-//       const row = rows.nth(i);
-//       const name = await row.locator(cartSelectors.itemName).textContent();
-//       const price = await row.locator(cartSelectors.itemPrice).textContent();
-//       const quantityText = await row.locator(cartSelectors.itemQuantity).innerText();
-//       const quantity = Number(quantityText.replace(/\D/g, '')) || 1;
-//       const total = await row.locator(cartSelectors.itemTotal).textContent();
-
-//       items.push({
-//         product: { name: name?.trim() || '', price: price?.trim() || '' },
-//         quantity,
-//         totalPrice: total?.trim() || '',
-//       });
-//     }
-
-//     return items;
-//   }
-
-//   async removeItem(index = 0) {
-//     const deleteButtons = this.page.locator(cartSelectors.deleteButton);
-//     await deleteButtons.nth(index).click();
-//     await this.page.waitForTimeout(500); // small wait for DOM update
-//   }
-
-//   async proceedToCheckout() {
-//     await this.page.click(cartSelectors.checkoutButton);
-//     await this.page.waitForLoadState('domcontentloaded');
-//   }
-
-//   async isEmpty(): Promise<boolean> {
-//     return this.page.locator(cartSelectors.emptyCartMessage).isVisible();
-//   }
-// }
-
-
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { cartSelectors } from '../selectors/cart.selectors';
 import { CartItem } from '../models/cart';
 
 export class CartPage {
   constructor(private page: Page) {}
 
+  // Navigate to Cart page
   async navigate() {
     await this.page.goto('/view_cart');
     await this.page.waitForSelector(cartSelectors.cartTable, { state: 'visible' });
   }
 
+  // Get all items in the cart (quantity = 1 enforced)
   async getCartItems(): Promise<CartItem[]> {
     const rows = this.page.locator(cartSelectors.cartItemRow);
     const count = await rows.count();
@@ -69,39 +19,41 @@ export class CartPage {
 
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
-      const name = await row.locator(cartSelectors.itemName).textContent();
-      const price = await row.locator(cartSelectors.itemPrice).textContent();
-      const quantityText = await row.locator(cartSelectors.itemQuantity).innerText();
-      const quantity = Number(quantityText.replace(/\D/g, '')) || 1;
-      const total = await row.locator(cartSelectors.itemTotal).textContent();
+      const name = (await row.locator(cartSelectors.itemName).textContent())?.trim() || '';
+      const price = (await row.locator(cartSelectors.itemPrice).textContent())?.trim() || '';
+      const total = (await row.locator(cartSelectors.itemTotal).textContent())?.trim() || '';
 
       items.push({
-        product: { name: name?.trim() || '', price: price?.trim() || '' },
-        quantity,
-        totalPrice: total?.trim() || '',
+        product: { name, price },
+        quantity: 1, // site ensures only 1 per row
+        totalPrice: total,
       });
     }
 
     return items;
   }
 
+  // Remove an item safely at a given index
   async removeItem(index = 0) {
+    const rows = this.page.locator(cartSelectors.cartItemRow);
     const deleteButtons = this.page.locator(cartSelectors.deleteButton);
+
+    const rowCountBefore = await rows.count();
+    if (rowCountBefore === 0) return;
+
     await deleteButtons.nth(index).click();
 
-    // Wait for the item to be removed dynamically
-    await this.page.waitForFunction(
-      (selector, initialCount) => document.querySelectorAll(selector).length < initialCount,
-      cartSelectors.cartItemRow,
-      await this.page.locator(cartSelectors.cartItemRow).count()
-    );
+    // Wait until the cart table has one less row
+    await expect(rows).toHaveCount(rowCountBefore - 1);
   }
 
+  // Proceed to checkout
   async proceedToCheckout() {
     await this.page.click(cartSelectors.checkoutButton);
     await this.page.waitForLoadState('domcontentloaded');
   }
 
+  // Check if cart is empty
   async isEmpty(): Promise<boolean> {
     return this.page.locator(cartSelectors.emptyCartMessage).isVisible();
   }

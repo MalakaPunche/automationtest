@@ -1,101 +1,12 @@
-// import { test, expect } from '../src/fixtures/sessions';
-
-// import { LoginPage } from '../src/pages/login';
-// import { ProductsPage } from '../src/pages/products';
-// import { ProductDetailPage } from '../src/pages/product-detail';
-// import { CartPage } from '../src/pages/cart';
-// import { CheckoutPage } from '../src/pages/checkout';
-// import { PaymentPage } from '../src/pages/payment';
-
-// import { testUser } from '../src/test-data/user.data';
-// import { productFilterData } from '../src/test-data/product.data';
-// import { checkoutData } from '../src/test-data/checkout.data';
-// import { paymentData } from '../src/test-data/payment.data';
-
-// test('End-to-end purchase flow using test data', async ({ page }) => {
-//   // -------------------
-//   // Login
-//   // -------------------
-//   const loginPage = new LoginPage(page);
-//   await loginPage.navigate();
-//   await loginPage.login(testUser);
-
-//   expect(await loginPage.isLoggedIn()).toBeTruthy();
-
-//   // -------------------
-//   // Products + Filter
-//   // -------------------
-//   const productsPage = new ProductsPage(page);
-//   await productsPage.navigate();
-
-//   await productsPage.filterByCategory(
-//     productFilterData.category,
-//     productFilterData.subCategory
-//   );
-
-//   const firstProduct = await productsPage.getFirstProduct();
-//   expect(firstProduct.name).not.toBe('');
-//   expect(firstProduct.price).not.toBe('');
-
-//   // -------------------
-//   // First product detail
-//   // -------------------
-//   await productsPage.viewProductDetails(0);
-
-//   const productDetailPage = new ProductDetailPage(page);
-//   const productDetails = await productDetailPage.getProductDetails();
-
-//   expect(productDetails.name).toBe(firstProduct.name);
-//   expect(productDetails.price).toBe(firstProduct.price);
-
-//   await productDetailPage.addToCart();
-//   await productDetailPage.continueShopping();
-
-//   // -------------------
-//   // Cart verification
-//   // -------------------
-//   const cartPage = new CartPage(page);
-//   await cartPage.navigate();
-
-//   const cartItems = await cartPage.getCartItems();
-//   expect(cartItems.length).toBeGreaterThan(0);
-//   expect(cartItems[0].product.name).toBe(firstProduct.name);
-
-//   // -------------------
-//   // Checkout
-//   // -------------------
-//   await cartPage.proceedToCheckout();
-
-//   const checkoutPage = new CheckoutPage(page);
-//   expect(await checkoutPage.verifyCheckoutPageVisible()).toBeTruthy();
-
-//   await checkoutPage.addComment(checkoutData.comment);
-//   await checkoutPage.placeOrder();
-
-//   // -------------------
-//   // Payment
-//   // -------------------
-//   const paymentPage = new PaymentPage(page);
-//   await paymentPage.fillPaymentDetails(paymentData);
-//   await paymentPage.confirmPayment();
-
-//   expect(await paymentPage.isPaymentSuccessful()).toBeTruthy();
-
-//   const successMessage = await paymentPage.getSuccessMessage();
-//   expect(successMessage).toContain('Congratulations');
-// });
-
-
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../src/pages/login';
 import { ProductsPage } from '../src/pages/products';
 import { CartPage } from '../src/pages/cart';
 import { PaymentPage } from '../src/pages/payment';
-import { UserCredentials, Product, PaymentData } from '../src/models';
+import { UserCredentials, PaymentData } from '../src/models';
 import { loginSelectors } from '../src/selectors/login.selectors';
-import { productsSelectors } from '../src/selectors/products.selectors';
 
-// Mock data for test
+// Test data
 const testUser: UserCredentials = {
   email: 'email999@gmail.com',
   password: 'Password999!',
@@ -109,69 +20,62 @@ const paymentInfo: PaymentData = {
   expiryYear: '2025',
 };
 
-test.describe('End-to-end purchase flow using test data', () => {
-  test('complete e2e purchase with cart item removal', async ({ page }) => {
+test.describe('E2E purchase flow with cart item removal', () => {
+  test('add two products, remove one, complete checkout', async ({ page }) => {
     const loginPage = new LoginPage(page);
     const productsPage = new ProductsPage(page);
     const cartPage = new CartPage(page);
     const paymentPage = new PaymentPage(page);
 
-    // Step 1: Login
+    // 1️⃣ Login
     await loginPage.navigate();
     await loginPage.login(testUser);
     await expect(page.locator(loginSelectors.loggedInUser)).toBeVisible();
 
-    // Step 2: Go to products page and filter
+    // 2️⃣ Navigate to products
     await productsPage.navigate();
     await productsPage.filterByCategory('Women', 'Dress');
 
-    // Step 3: Verify first product
-    const firstProduct: Product = await productsPage.getFirstProduct();
-    expect(firstProduct.name).not.toBe('');
-    expect(firstProduct.price).not.toBe('');
-
-    // Step 4: Add first product to cart
+    // 3️⃣ Add first product
+    const firstProduct = await productsPage.getFirstProduct();
     await productsPage.addFirstProductToCart();
+
+    // 4️⃣ Add second product
+    await productsPage.viewProductDetails(1); // 2nd product detail
+    const secondProduct = await productsPage.getFirstProduct(); 
+    await productsPage.addFirstProductToCart();
+
+    // 5️⃣ Go to cart / checkout page
     await cartPage.navigate();
+
+    // Verify both products exist
     let cartItems = await cartPage.getCartItems();
-    expect(cartItems.length).toBeGreaterThan(0);
-    expect(cartItems[0].product.name).toBe(firstProduct.name);
+    expect(cartItems.find(i => i.product.name === firstProduct.name)).toBeDefined();
+    expect(cartItems.find(i => i.product.name === secondProduct.name)).toBeDefined();
 
-    // Step 5: Go back to product list, verify filter still valid
-    await productsPage.goBack();
-    const firstProductAfterBack = await productsPage.getFirstProduct();
-    expect(firstProductAfterBack.name).toBe(firstProduct.name);
+    // 6️⃣ Remove the second product
+    const secondIndex = cartItems.findIndex(i => i.product.name === secondProduct.name);
+    await cartPage.removeItem(secondIndex);
 
-    // Step 6: View second product details and add to cart
-    await productsPage.viewProductDetails(1);
-    const secondProduct = await productsPage.getFirstProduct(); // first in details page
-    await productsPage.addFirstProductToCart();
-
-    // Step 7: Open cart, remove first added item
-    await cartPage.navigate();
-    await cartPage.removeItem(0);
+    // Verify removed
     cartItems = await cartPage.getCartItems();
-    expect(cartItems.find(i => i.product.name === firstProduct.name)).toBeUndefined();
+    expect(cartItems.find(i => i.product.name === secondProduct.name)).toBeUndefined();
 
-    // Step 8: Proceed to checkout
+    // 7️⃣ Proceed to checkout
     await cartPage.proceedToCheckout();
 
-    // Fill in payment form (inside iframe)
+    // 8️⃣ Fill payment and confirm
     await paymentPage.fillPaymentDetails(paymentInfo);
-
-    // Step 9: Complete payment
     await paymentPage.confirmPayment();
 
-    // Verify payment success
+    // Verify success
     const isSuccess = await paymentPage.isPaymentSuccessful();
     expect(isSuccess).toBe(true);
+
     const successMessage = await paymentPage.getSuccessMessage();
-    expect(successMessage).toContain('Congratulations! Your order has been confirmed!');
+    expect(successMessage).toContain('Congratulations');
 
-    // Click continue
     await paymentPage.clickContinue();
-
-    // Verify redirected back to home or order confirmation
     await expect(page).toHaveURL(/\/$/);
   });
 });

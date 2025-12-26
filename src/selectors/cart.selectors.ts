@@ -27,19 +27,19 @@ export const cartSelectors = {
 
   // Cart table
   cartTable: '#cart_info_table',
-  cartItemRow: '#cart_info_table tbody tr',
+  cartItemRow: '#tr.cart_item',
 
   // Cart item details
-  itemImage: '.cart_product img',
-  itemName: '.cart_description h4 a',
-  itemPrice: '.cart_price p',
-  itemQuantity: '.cart_quantity input', // input field for quantity
-  itemTotal: '.cart_total_price', 
-  deleteButton: '.cart_quantity_delete',
+  // itemImage: '.cart_product img',
+  itemName: '.cart_description p',
+  itemPrice: '.cart_price ',
+  itemQuantity: '.cart_quantity', // input field for quantity
+  itemTotal: '.cart_total', 
+  deleteButton: '.cart_delete',
 
   // Checkout
-  checkoutButton: 'a.check_out',
+  checkoutButton: '.check_out',
 
   // Empty cart
-  emptyCartMessage: '#empty_cart',
+  emptyCartMessage: '.cart-empty',
 };
